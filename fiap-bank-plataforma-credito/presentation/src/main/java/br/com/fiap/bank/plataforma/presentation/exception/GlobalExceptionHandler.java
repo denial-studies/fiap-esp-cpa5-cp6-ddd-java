@@ -4,6 +4,8 @@ import br.com.fiap.bank.plataforma.application.exception.RecursoNaoEncontradoExc
 import br.com.fiap.bank.plataforma.application.exception.RegraNegocioException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +17,30 @@ import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErroResponse> tratarAcessoNegado(AccessDeniedException ex) {
+        ErroResponse erro = new ErroResponse(
+                LocalDateTime.now(),
+                HttpStatus.FORBIDDEN.value(),
+                "Acesso Negado",
+                "Usuario nao possui permissao para executar esta operacao.",
+                List.of(ex.getMessage() != null ? ex.getMessage() : "Acesso Negado")
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(erro);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErroResponse> tratarFalhaAutenticacao(AuthenticationException ex) {
+        ErroResponse erro = new ErroResponse(
+                LocalDateTime.now(),
+                HttpStatus.UNAUTHORIZED.value(),
+                "Nao Autorizado",
+                "Autenticacao necessaria para acessar o recurso.",
+                List.of(ex.getMessage() != null ? ex.getMessage() : "Nao Autorizado")
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(erro);
+    }
 
     @ExceptionHandler(RecursoNaoEncontradoException.class)
     public ResponseEntity<ErroResponse> tratarRecursoNaoEncontrado(RecursoNaoEncontradoException ex) {

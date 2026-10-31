@@ -1,5 +1,6 @@
 package br.com.fiap.bank.mesa.client;
 
+import br.com.fiap.bank.mesa.config.FeignClientConfig;
 import br.com.fiap.bank.mesa.dto.AprovarSolicitacaoRequestDTO;
 import br.com.fiap.bank.mesa.dto.BuscarSolicitacaoRequestDTO;
 import br.com.fiap.bank.mesa.dto.ReprovarSolicitacaoRequestDTO;
@@ -10,7 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "plataformaCreditoClient", url = "${plataforma.credito.url:http://localhost:8081}")
+@FeignClient(
+        name = "plataformaCreditoClient",
+        url = "${plataforma.credito.url:http://localhost:8081}",
+        configuration = FeignClientConfig.class
+)
 public interface PlataformaCreditoFeignClient {
 
     @PostMapping("/api/credito/listarTodasSolicitacoes")
